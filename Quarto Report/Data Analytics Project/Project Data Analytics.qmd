@@ -1,0 +1,197 @@
+---
+title: "A Global Journey: Unveiling the Disparities across the World"
+subtitle: "Examining the connection between GDP, Life Expectancy, Population and Deprivations"
+author: "Aislinn McClean"
+date: "1st April 2024"
+format:
+ html:
+  theme: cerulean
+  backgroundcolor: lightblue
+  fig-cap-location: margin
+  fig-align: center
+  toc: true
+execute: 
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+#libraries
+library(tidyverse)
+library(plotly)
+library(readr)
+
+#data
+indicator1 <- read_csv("~/unicef_indicator_1 (2).csv")
+metadata <- read_csv("~/unicef_metadata (2).csv")
+
+#data join
+data_join <- full_join(metadata, indicator1)
+
+```
+
+## "A Global Journey: Unveiling Disparities across the World"
+
+The escalating global **inequalities pose a critical challenge** in today's world, impacting every aspect of individuals' lives, spanning from mental well-being to physical health. As more people grapple with disparities and unjust wealth distributions, the hurdles they face in education, healthcare, and future prospects multiply. In our endeavor to illuminate the reality of [**"A Global Journey: Unveiling Disparities across the World,"**]{.underline} we delve into the rigorous analysis of Gapminder data, which aims to answer the fundamental question: ***How unfair disparities such as GDP fluctuations, life expectancy, and deprivations among developed and developing affect an individual?***
+
+Through this dynamic visualization report, it offers a comprehensive analysis of the hardships endured by individuals worldwide. Leveraging UNICEF's extensive dataset, our interactive visuals [aim to expose the stark contrasts in well-being among developed and developing nations]{.underline}, underscoring the imperative for immediate action.
+
+Engaging with this data equips us with invaluable insights into the underlying causes of deprivation and unequal wealth distribution, empowering us to drive **meaningful change**. Let us unite in efforts to mitigate this burgeoning threat and cultivate a world where every individual can thrive, irrespective of their location in a developed or developing nation.
+
+## Life Expectancy in 1968 compared to 2018
+
+```{r}
+#| fig-cap: "Visual Representation of Life Expectancy across the world in 1968"
+map_world <- map_data("world")
+data_join %>%
+  filter(year == 1968) %>%
+  full_join(map_world) %>%
+  ggplot(aes(x = long, y = lat, group = group, fill = lifeExp)) +
+  geom_polygon() +
+    scale_fill_gradient(low = "yellow", high = "red", na.value = "grey") +
+  labs(
+    title = "Life Expectancy of countries in 1968",
+    subtitle = "Countries in grey have no data due to a mismatch with their names",
+    caption = "Source: R package {gapminder}",
+    x = "",
+    y = "",
+    fill = "lifeExp"
+  ) +
+  theme_bw() +
+  theme(text = element_text(family = "serif"))
+```
+
+```{r}
+#| fig-cap: "Visual Representation of Life Expectancy across the world in 2018"
+#| fig-cap-location: top
+
+map_world <- map_data("world")
+
+data_join %>%
+  filter(year == 2018) %>%
+  full_join(map_world) %>%
+  ggplot(aes(x = long, y = lat, group = group, fill = lifeExp)) +
+  geom_polygon() +
+    scale_fill_gradient(low = "yellow", high = "red", na.value = "grey") +
+  labs(
+    title = "Life Expectancy of countries in 2018",
+    subtitle = "Countries in grey have no data due to a mismatch with their names",
+    caption = "Source: R package {gapminder}",
+    x = "",
+    y = "",
+    fill = "lifeExp"
+  ) +
+  theme_bw() +
+  theme(text = element_text(family = "serif"))
+
+```
+
+These maps offer visual representations of **global life expectancy difference in 50 years from 1968 to 2018**, shedding light on the stark disparities between developed and developing nations. It vividly illustrate how *developed countries tend to enjoy longer life expectancy compared to their counterparts in the developing world* regardless of timing difference of 50 years. Although 50 years have passed from 1968 to 2018, these differences are still shown between both developed and developing nations.
+
+This underscores the urgency for:
+
+-   interventions aimed at bridging these gaps
+
+-   fostering greater equality between nations at different stages of development.
+
+## Evolution of GDP per Capita of different countries through the years
+
+```{r}
+timeseries_plot3 <-data_join %>%
+  ggplot()+
+  aes(year, GDP, group = region, color = continent) +
+  geom_line() +
+labs(
+  title = "GDP per Capita of different countries over the years",
+  caption = "Source: R package {gapminder}",
+  x = "Year",
+  y = "GDP per Capita in USD"
+) +
+  theme_bw() +
+    theme(
+    text = element_text(family = "serif")
+    )
+ggplotly(timeseries_plot3)
+```
+
+This time series provides visual depictions of **GDP per capita trends for individual countries over the years**, vividly highlighting the disparities among nations. For instance:
+
+-   Monaco consistently boasts the highest GDP per capita
+
+-   Burundi's GDP remains staggeringly low
+
+Additionally, countries are color-coded based on their continents, revealing notable differences across regions. Europe, for example, tends to exhibit higher GDP per capita compared to countries in South America, Africa, or Asia. These visualizations also underscore the ***significant wealth disparity between developing and developed nations**.*
+
+## Connection between GDP and Life Expectancy in various continents
+
+```{r}
+#| fig-cap: "Scatterplot of the correlation between GDP per capita and life expectancy across various continents."
+ggplot(data_join) +
+  aes(GDP, lifeExp, color = continent, size = Population) +
+  geom_point(alpha = 0.2) +
+  facet_wrap(~continent, nrow = 1) +
+  scale_x_continuous(
+    limits = c(0, 50000), 
+    breaks = c(20000, 40000),
+    labels = scales::unit_format(unit = "K", scale = 0.001)
+  ) +
+  labs(
+    x = "GDP per Capita in USD",
+    y = "Life Expectancy",
+    title = "Relationship between Life Expectancy and GDP per Capita in different continents.", 
+    caption = "Source: R package {gapminder}"
+  ) +
+  guides(color = "none", size = "none") +
+  theme_classic() +
+  theme(
+    text = element_text(family = "serif")
+    )
+```
+
+This scatterplot provides a visualisation on the correlation between **GDP per capita and life expectancy across various continents**, revealing stark disparities between regions with differing levels of economic development. For example, the scatterplot illustrates how *Africa generally exhibits lower life expectancies and GDP per capita compared to Europe*. This disparity underscores the [**influence of wealth on life expectancy and highlights the unequal distribution of resources among continents.**]{.underline}
+
+## Deprivations experienced in each continents from 2011 to 2018
+
+```{r}
+#| fig-cap: "Bar chart depiction of deprivations experience in each continent from 2011 to 2018."
+
+indicator1 %>% 
+filter(.by = year) %>% 
+group_by(year) %>% 
+ggplot(aes(continent, deprivations, fill = continent)) +
+geom_col() +
+  facet_wrap(~year) +
+labs(
+x = "", 
+y = "Total number of Deprivations",
+fill = "Continent",
+title = "Total number of Deprivations suffered in each continent from 2011 to 2018"
+  ) +
+  theme_classic() +
+  theme(
+    text = element_text(family = "serif"),
+    axis.text.x = element_blank()
+  )
+```
+
+This bar chart offers insights into the **progression of deprivations experienced by each country from 2011 to 2018**. It starkly illustrates the *unequal burden of deprivation between developing and developed nations*, highlighting the varying degrees of hardship endured. Remarkably, Europe consistently registered minimal deprivations throughout the period, with only a slight increase noted in 2017. Conversely, Africa consistently exhibited the highest levels of deprivation each year.
+
+# End of our Journey
+
+In summary, the exploration of global disparities data provides crucial insights into a global issue affecting individuals worldwide. Through these visualizations and in-depth analysis of UNICEF data and gapminder data, we uncovered the **prevalence and urgency of addressing disparities** in:
+
+1.  GDP per capita and wealth distribution
+
+2.  Life Expectancy and its differences in developed and developing countries
+
+3.  Deprivations and their interaction in developed and developing nations
+
+These visual representations highlight **variations and disparities in deprivation levels, as well as the correlation between life expectancy and GDP between countries**. This underscores the *importance of financial resources* in addressing these issues experienced mostly by individuals in developing countries.
+
+#### *It is imperative that we continue striving to mitigate this threat and create a world where every individual can thrive, using the insights gained to guide meaningful action toward a brighter future for all.*
+
+![](images/people-of-different-races-are-standing-holding-each-other-s-hands-free-vector.jpg){fig-align="center"}

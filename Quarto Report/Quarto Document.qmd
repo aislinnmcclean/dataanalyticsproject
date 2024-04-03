@@ -1,0 +1,42 @@
+---
+title: "A Global Journey: Unlocking Childhood Deprivation"
+subtitle: "Exploring the dynamics between Deprivations, Life Expectancy, GDP and Populations across the years"
+author: "Aislinn McClean"
+date: "2024-04-10"
+format: 
+  html:
+    theme: sandstone
+    backgroundcolor: lightblue
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+```{r} 
+#| label: setup
+#| include: false
+
+#libraries
+library(tidyverse)
+library(plotly)
+
+#data
+indicator1 <- read_csv("College/Data Analytics/Quarto Report/unicef_indicator_1 (2).csv")
+metadata <- read_csv("College/Data Analytics/Quarto Report/unicef_metadata (2).csv")
+
+
+
+
+```
+
+```{r}
+map_world <- map_data("world")
+
+data_join %>%
+  filter(year == 1983) %>%
+full_join(map_world) %>% 
+ggplot(aes(x = long, y = lat, group = group, fill = lifeExp)) +
+  geom_polygon()
+
+```
+
